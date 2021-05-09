@@ -39,7 +39,7 @@ optional arguments:
 
 ## Examples
 
-- **Scan a specific list of ports***
+- **Scan a specific list of ports**
 
 ```bash
 python port_scanner.py -a localhost -p 80,443,100 -o loclhost.txt
