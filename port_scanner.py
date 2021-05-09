@@ -3,7 +3,6 @@
 
 import argparse
 import socket
-import threading
 import concurrent.futures
 
 from termcolor import colored
