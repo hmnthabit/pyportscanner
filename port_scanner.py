@@ -25,7 +25,8 @@ def ports_list_scanner(host, ports, fout):
             for port in ports:
                 threads.append(executor.submit(
                     port_scan, host, int(port), port_dict, fout))
-                concurrent.futures.wait(threads)
+            concurrent.futures.wait(threads)
+        print_results(threads, fout)
 
 
 def port_range_scan(host, port_range, fout):
@@ -34,13 +35,17 @@ def port_range_scan(host, port_range, fout):
     '''
     gethost(host)
 
-    port_range = port_range.split(",")
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        for port in range(int(port_range[0]), int(port_range[1])+1):
-            threads.append(executor.submit(
-                port_scan, host, int(port), port_dict, fout))
+    if port_range:
+        port_range = port_range.split(",")
+        
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            for port in range(int(port_range[0]), int(port_range[1])+1):
+                threads.append(executor.submit(
+                    port_scan, host, int(port), port_dict, fout))
+            
             concurrent.futures.wait(threads)
 
+        print_results(threads, fout)
 
 def port_scan(host, port, port_dict, fout):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,19 +55,14 @@ def port_scan(host, port, port_dict, fout):
     output = s.connect_ex((host, int(port)))
 
     if output == 0:
-        result = "[+] Port {} is open --> {}\n".format(
-            port, port_dict.get(port, "Unknown"))
-        print(colored("[+] Port {} is open --> {}".format(port,
-                                                          port_dict.get(port)), "green"))
+        result = "[+] Port {} is open --> {}\n".format(port, port_dict.get(port, "Unknown"))
+        result2 = (colored("[+] Port {} is open --> {}".format(port,port_dict.get(port)), "green"),result)
+        return result2
 
     else:
-        result = "[+] Port {} is closed --> {}\n".format(
-            port, port_dict.get(port, "Unknown"))
-        print(colored(
-            "[+] Port {} is closed --> {}".format(port, port_dict.get(port)), "red"))
-
-    if fout:
-        fout.write(result)
+        result = "[+] Port {} is closed --> {}\n".format(port, port_dict.get(port, "Unknown"))
+        result2 = (colored("[+] Port {} is closed --> {}".format(port, port_dict.get(port)), "red"),result)
+        return result2
 
 
 def common_ports_database():
@@ -78,6 +78,20 @@ def common_ports_database():
             port_dict[int(line[0])] = line[1]
     return port_dict
 
+def print_results(threrads,fout):
+                    
+        if fout:
+            # result will be printed in the same submitted order. However, the threads execution is asynchronous
+            for b in (threads):
+                r = b.result()
+                print(r[0])
+                fout.write(r[1])
+        
+        else:
+            for b in (threads):
+                r = b.result()
+                print(r[0])
+                # fout.write(r)
 
 def gethost(host):
     # Get the host IP by the name
@@ -115,8 +129,8 @@ def arg_parser():
     # Initialize the parser object
     parser = argparse.ArgumentParser(
         usage='port_scanner.py -a HOST -p PORT1,PORT2'
-        '\nExample 1: python3 port_scan.py -a HOST -p 21,80'
-        '\nExample 2: python3 port_scan.py -a HOST --portrange 1,100 -out scan1.txt')
+        '\nExample 1: python3 port_scanner.py -a HOST -p 21,80'
+        '\nExample 2: python3 port_scanner.py -a HOST --range 1,100 -o scan1.txt')
 
     # Add arguments
     parser.add_argument('-a', required=True, type=str,
