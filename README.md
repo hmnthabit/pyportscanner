@@ -25,8 +25,8 @@ pip install colored
 ```bash
 python port_scanner.py --help
 usage: port_scanner.py -a HOST -p PORT1,PORT2
-Example 1: python3 port_scan.py -a HOST -p 21,80
-Example 2: python3 port_scan.py -a HOST --portrange 1,100 -out scan1.txt
+Example 1: python3 port_scanner.py -a HOST -p 21,80
+Example 2: python3 port_scanner.py -a HOST --range 1,100 -o scan1.txt
 
 optional arguments:
   -h, --help            show this help message and exit
