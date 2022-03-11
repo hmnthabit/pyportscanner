@@ -48,5 +48,5 @@ python port_scanner.py -a localhost -p 80,443,100 -o loclhost.txt
 - **Scan a specific range of ports**
 
 ```bash
-python port_scanner.py -a 192.168.0.100 --portrange 80,90
+python port_scanner.py -a 192.168.0.100 --range 80,90
 ```
