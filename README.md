@@ -1,4 +1,4 @@
-# pyportscanner: Efficient Python Port Scanner
+# pyportscanner: An Efficient Python Port Scanner
 pyportscanner is a python script that identifies the active ports of a given host efficiently.
 
 ## Features
